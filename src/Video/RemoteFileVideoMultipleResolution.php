@@ -74,7 +74,8 @@ class RemoteFileVideoMultipleResolution extends FileVideoMultipleResolution
         $this->files = [];
         $urlParts = [];
         if(!preg_match($this->getFilePathRegExp(), $basicUrl, $urlParts)) {
-            throw new \Exception("File Url not as expected");
+            //throw new \Exception("File Url not as expected");
+            return;
         }        
 
         $this->video_id = $urlParts[2];
