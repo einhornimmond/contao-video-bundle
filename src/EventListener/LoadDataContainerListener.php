@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -9,32 +9,27 @@
 namespace HeimrichHannot\VideoBundle\EventListener;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use HeimrichHannot\VideoBundle\EventListener\Dca\ConfigElementListener;
 use HeimrichHannot\VideoBundle\EventListener\Dca\PageContainer;
 use HeimrichHannot\VideoBundle\Generator\DcaFieldGenerator;
 
+/**
+ * @Hook("loadDataContainer", priority=1)
+ */
 class LoadDataContainerListener
 {
-    const PALETTE_VIDEO = 'videoProvider';
-    const PALETTE_PLAYER = 'videoFullsize,videoAutoplay';
+    public const PALETTE_VIDEO = 'videoProvider';
+    public const PALETTE_PLAYER = 'videoFullsize,videoAutoplay';
 
-    /**
-     * @var array
-     */
-    private $bundleConfig;
+    private array $bundleConfig;
 
-    /**
-     * LoadDataContainerListener constructor.
-     */
     public function __construct(array $bundleConfig)
     {
         $this->bundleConfig = $bundleConfig;
     }
 
-    /**
-     * Hook loadDataContainer.
-     */
-    public function onLoadDataContainer(string $table): void
+    public function __invoke(string $table): void
     {
         switch ($table) {
             case 'tl_news':
@@ -66,16 +61,18 @@ class LoadDataContainerListener
         }
 
         $dca = &$GLOBALS['TL_DCA']['tl_news'];
-        $videoPalette = DcaFieldGenerator::addSingleLegendPalette('tl_news');
+        DcaFieldGenerator::addSingleLegendPalette('tl_news');
+
+        $paletteManipulator = PaletteManipulator::create()
+            ->addLegend('video_legend', 'image_legend', PaletteManipulator::POSITION_BEFORE)
+            ->addField('addVideo', 'video_legend', PaletteManipulator::POSITION_APPEND);
 
         foreach ($dca['palettes'] as $paletteName => $palette) {
             if (!\is_string($palette)) {
                 continue;
             }
-            $paletteManipulator = PaletteManipulator::create()
-                ->addLegend('video_legend', 'image_legend', PaletteManipulator::POSITION_BEFORE)
-                ->addField('addVideo', 'video_legend', PaletteManipulator::POSITION_APPEND)
-                ->applyToPalette($paletteName, 'tl_news');
+
+            $paletteManipulator->applyToPalette($paletteName, 'tl_news');
         }
     }
 
