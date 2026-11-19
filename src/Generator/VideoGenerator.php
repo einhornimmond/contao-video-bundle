@@ -8,14 +8,15 @@
 
 namespace HeimrichHannot\VideoBundle\Generator;
 
+use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\FilesModel;
 use Contao\Frontend;
 use Contao\PageModel;
 use HeimrichHannot\UtilsBundle\Image\ImageUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use HeimrichHannot\UtilsBundle\Template\TemplateUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use HeimrichHannot\VideoBundle\Controller\ContentElement\ExtendedVideoElementController;
 use HeimrichHannot\VideoBundle\Event\AfterRenderPlayerEvent;
 use HeimrichHannot\VideoBundle\Event\BeforeRenderPlayerEvent;
 use HeimrichHannot\VideoBundle\Video\ExternalElementInterface;
@@ -32,10 +33,6 @@ class VideoGenerator
      * @var Environment
      */
     private $twig;
-    /**
-     * @var ModelUtil
-     */
-    private $modelUtil;
     /**
      * @var ImageUtil
      */
@@ -56,18 +53,14 @@ class VideoGenerator
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
-    /**
-     * @var Utils
-     */
-    private $utils;
+    private Utils $utils;
 
     /**
      * VideoGenerator constructor.
      */
-    public function __construct(Environment $twig, ModelUtil $modelUtil, ImageUtil $imageUtil, array $bundleConfig, TranslatorInterface $translator, TemplateUtil $templateUtil, EventDispatcherInterface $eventDispatcher, Utils $utils)
+    public function __construct(Environment $twig, ImageUtil $imageUtil, array $bundleConfig, TranslatorInterface $translator, TemplateUtil $templateUtil, EventDispatcherInterface $eventDispatcher, Utils $utils)
     {
         $this->twig = $twig;
-        $this->modelUtil = $modelUtil;
         $this->imageUtil = $imageUtil;
         $this->bundleConfig = $bundleConfig;
         $this->translator = $translator;
@@ -87,6 +80,14 @@ class VideoGenerator
      */
     public function generate(VideoInterface $video, $parent, array $options = []): string
     {
+        if ($this->utils->container()->isBackend())
+        {
+            $objTemplate = new BackendTemplate('be_wildcard');
+            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['CTE'][ExtendedVideoElementController::TYPE][0] . ' ###';
+
+            return $objTemplate->parse();
+        }
+
         if (isset($options['rootPage'])) {
             if (!$options['rootPage'] instanceof PageModel) {
                 throw new \InvalidArgumentException("Option rootPage only allows \Contao\PageModel instances. Input was ".\get_class($options['rootPage']));
@@ -207,8 +208,7 @@ class VideoGenerator
             return;
         }
 
-        /** @var FilesModel $imageModel */
-        $imageModel = $this->modelUtil->findModelInstancesBy('tl_files', 'uuid', $video->getPreviewImage());
+        $imageModel = FilesModel::findByUuid($video->getPreviewImage());
 
         //TODO: Load image from external source
 
@@ -239,7 +239,6 @@ class VideoGenerator
         $context['text'] = $this->translator->trans('huh_video.video.'.$video::getType().'.privacy.text');
         $context['checkbox'] = $this->translator->trans('huh_video.video.'.$video::getType().'.privacy.checkbox', ['%host%' => \Contao\Environment::get('host')]);
         $context['videoContext'] = $videoContext;
-        $template = $this->getPrivacyTemplate($rootPage);
 
         return $this->twig->render($this->getPrivacyTemplate($rootPage), $context);
     }

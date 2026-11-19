@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2025-02-27
+- Changed: refactored media query options callback listener
+- Fixed: exception with non public service
+- Fixed: some deprecation warnings
+- Deprecated: [VideoFieldContainer](src/DataContainer/VideoFieldContainer.php)
+
+## [1.7.1] - 2024-02-27
+- Fixed: content element text field mandatory
+
+## [1.7.0] - 2024-02-14
+- Added: migration command to migration from youtube bundle ([#19])
+- Changed: refactored content element to controller ([#19])
+- Changed: added text field to video content element ([#19])
+- Fixed: some deprecations ([#19])
+- Deprecated: old content element class ([#19])
+
+## [1.6.0] - 2023-12-22
+- Changed: refactored list- and readerbundle integration to ConfigElementType
+- Fixed: hard dependency to contao/list-bundle and contao/reader-bundle is osme 
+
+## [1.5.0] - 2023-09-13
+- Added: missing license file
+- Changed: refactored hooks to current contao standard
+- Fixed: issues with hook ordering
+
+## [1.4.0] - 2023-08-23
+- Added: support for additional url parameter for vimeo ([#18], [@zonky2])
+
+## [1.3.1] - 2023-05-08
+- Fixed: generate content element in backend 
+
 ## [1.3.0] - 2023-01-23
 - Added: encore contracts support ([#16])
 
@@ -206,5 +237,9 @@ All notable changes to this project will be documented in this file.
 Initial version
 
 
-[#16]: https://github.com/heimrichhannot/contao-video-bundle/pull/16
 [#15]: https://github.com/heimrichhannot/contao-video-bundle/pull/15
+[#16]: https://github.com/heimrichhannot/contao-video-bundle/pull/16
+[#18]: https://github.com/heimrichhannot/contao-video-bundle/pull/18
+[#19]: https://github.com/heimrichhannot/contao-video-bundle/pull/19
+
+[@zonky2]: https://github.com/zonky2

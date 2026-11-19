@@ -117,6 +117,7 @@ class FileVideoMultipleResolution extends FileVideo
             if(!preg_match($this->getFilePathRegExp(), $fileObject->path, $matches)) {
                 //throw new \Exception("File name didn't match expectations, expected for example: file_name_720.mp4");
                 \Message::addError("File name didn't match expectations, expected for example: file_name_720.mp4");
+                $this->video_id = 'Error';
             }
             if($this->video_id == '') {
                 $this->video_id = $matches[1];
