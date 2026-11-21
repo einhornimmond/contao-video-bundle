@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2026-11-21
+- Changed: requires Contao ^5.3 and PHP ^8.2 (tested with PHP 8.5)
+- Changed: requires utils bundle ^3.0, multi column editor bundle ^2.21, twig support bundle ^1.9 and config element type bundle ^0.3
+- Changed: hooks, callbacks, content element, route and command are registered with PHP attributes instead of annotations
+- Changed: preview images are rendered with the bundled `@HeimrichHannotVideo/image/picture.html.twig` instead of `@HeimrichHannotContaoUtils/picture.html.twig` (adjust custom templates including the old one)
+- Changed: preview image data is created by the Contao image studio
+- Removed: `space` field from the content element palette (removed in Contao 5)
+
 ## [1.8.0] - 2025-02-27
 - Changed: refactored media query options callback listener
 - Fixed: exception with non public service

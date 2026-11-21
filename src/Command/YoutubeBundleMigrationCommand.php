@@ -12,6 +12,7 @@ use HeimrichHannot\ReaderBundle\Model\ReaderConfigElementModel;
 use HeimrichHannot\VideoBundle\ConfigElementType\VideoConfigElementType;
 use HeimrichHannot\VideoBundle\Controller\ContentElement\ExtendedVideoElementController;
 use HeimrichHannot\VideoBundle\Video\YouTubeVideo;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,10 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
+#[AsCommand(name: 'huh:video:migrate-youtube-bundle', description: 'Migrate youtube bundle to video bundle')]
 class YoutubeBundleMigrationCommand extends Command
 {
-    protected static $defaultName = 'huh:video:migrate-youtube-bundle';
-    protected static $defaultDescription = 'Migrate youtube bundle to video bundle';
 
     private Connection $connection;
     private ParameterBagInterface $parameterBag;
@@ -39,16 +39,15 @@ class YoutubeBundleMigrationCommand extends Command
     }
 
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
-            ->setDescription(self::$defaultDescription)
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Preview migration without changing the database.')
         ;
     }
 
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->framework->initialize();
 

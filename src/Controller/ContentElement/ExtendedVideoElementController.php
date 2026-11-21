@@ -5,8 +5,8 @@ namespace HeimrichHannot\VideoBundle\Controller\ContentElement;
 use Contao\BackendTemplate;
 use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
-use Contao\CoreBundle\ServiceAnnotation\ContentElement;
-use Contao\Template;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsContentElement;
+use Contao\CoreBundle\Twig\FragmentTemplate;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 use HeimrichHannot\VideoBundle\Asset\FrontendAsset;
 use HeimrichHannot\VideoBundle\Collection\VideoProviderCollection;
@@ -18,12 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @ContentElement(ExtendedVideoElementController::TYPE, category="media", template="ce_video")
- */
+#[AsContentElement(ExtendedVideoElementController::TYPE, category: 'media', template: 'ce_video')]
 class ExtendedVideoElementController extends AbstractContentElementController
 {
     public const TYPE = 'huh_video';
+    private VideoProviderCollection $videoProviderCollection;
     private VideoGenerator $videoGenerator;
     private Utils $utils;
     private FrontendAsset $frontendAsset;
@@ -49,7 +48,7 @@ class ExtendedVideoElementController extends AbstractContentElementController
     }
 
 
-    protected function getResponse(Template $template, ContentModel $model, Request $request): ?Response
+    protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {
         $video = $this->videoProviderCollection->getVideoByRawDataWithSelector($model->row(), null);
 

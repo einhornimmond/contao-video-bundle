@@ -9,18 +9,18 @@
 namespace HeimrichHannot\VideoBundle\Controller;
 
 use Contao\Model;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use HeimrichHannot\VideoBundle\Collection\VideoProviderCollection;
 use HeimrichHannot\VideoBundle\Generator\VideoGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class FrontendController.
  *
- * @Route("/huh_video", name="huh_video_", defaults={"_scope"="frontend", "_token_check"=false })
  */
+#[Route('/huh_video', name: 'huh_video_', defaults: ['_scope' => 'frontend', '_token_check' => false])]
 class FrontendController extends AbstractController
 {
     /**
@@ -39,21 +39,21 @@ class FrontendController extends AbstractController
     /**
      * FrontendController constructor.
      */
-    public function __construct(ModelUtil $modelUtil, VideoGenerator $videoGenerator, VideoProviderCollection $videoProviderCollection)
+    public function __construct(Utils $utils, VideoGenerator $videoGenerator, VideoProviderCollection $videoProviderCollection)
     {
-        $this->modelUtil = $modelUtil;
+        $this->modelUtil = $utils->model();
         $this->videoGenerator = $videoGenerator;
         $this->videoProviderCollection = $videoProviderCollection;
     }
 
     /**
-     * @Route("/videobyentity/{entity}/{id}", name="video-by-entity", requirements={"id"="\d+"})
      *
      * @param string $entity Table name without tl_ prefix
      * @param int    $id
      *
      * @return Response
      */
+    #[Route('/videobyentity/{entity}/{id}', name: 'video-by-entity', requirements: ['id' => '\d+'])]
     public function showVideoByEntityAction($entity, $id)
     {
         /** @var Model|null $entity */

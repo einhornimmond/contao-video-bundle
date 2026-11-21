@@ -33,7 +33,7 @@ class PrivacyCenterListener implements EventSubscriberInterface, ServiceSubscrib
         $this->utils = $utils;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             AfterRenderPlayerEvent::NAME => 'afterRenderPlayer',
@@ -84,7 +84,7 @@ class PrivacyCenterListener implements EventSubscriberInterface, ServiceSubscrib
         ));
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         $services = [];
 
@@ -95,7 +95,7 @@ class PrivacyCenterListener implements EventSubscriberInterface, ServiceSubscrib
         return $services;
     }
 
-    protected function isPrivacyCenterEnabled(PageModel $rootPage = null)
+    protected function isPrivacyCenterEnabled(?PageModel $rootPage = null)
     {
         $isPrivacyCenterEnabled = false;
 

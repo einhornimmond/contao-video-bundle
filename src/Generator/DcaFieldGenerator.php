@@ -156,7 +156,11 @@ class DcaFieldGenerator
                 'inputType' => 'select',
                 'default' => 'huh_video.fields.videoLinkText.default',
                 'options_callback' => function (DataContainer $dc) {
-                    return System::getContainer()->get('huh.utils.choice.message')->getCachedChoices('huh_video.fields.videoLinkText');
+                    return array_filter(
+                        System::getContainer()->get('translator')->getCatalogue()->all('messages'),
+                        static fn (string $key): bool => str_starts_with($key, 'huh_video.fields.videoLinkText'),
+                        \ARRAY_FILTER_USE_KEY
+                    );
                 },
                 'eval' => ['maxlength' => 255, 'tl_class' => 'w50'],
                 'sql' => "varchar(255) NOT NULL default ''",
@@ -283,7 +287,7 @@ class DcaFieldGenerator
                                     'groupStyle' => 'width: 48%',
                                 ],
                                 'options_callback' => function (DataContainer $dc) {
-                                    return System::getLanguages(true);
+                                    return System::getContainer()->get('contao.intl.locales')->getLocales();
                                 },
                             ],
                         ],

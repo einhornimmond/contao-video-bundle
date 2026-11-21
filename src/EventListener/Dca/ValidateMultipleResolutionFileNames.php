@@ -2,24 +2,21 @@
 
 namespace HeimrichHannot\VideoBundle\EventListener\Dca;
 
-use Contao\CoreBundle\ServiceAnnotation\Callback;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Contao\StringUtil;
-use Contao\System;
+use Contao\FilesModel;
 use HeimrichHannot\VideoBundle\Video\FileVideoMultipleResolution;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 
-/**
- * @Callback(table="tl_content", target="fields.multiResolutionVideoSRC.save")
- */
+#[AsCallback(table: 'tl_content', target: 'fields.multiResolutionVideoSRC.save')]
 class ValidateMultipleResolutionFileNames
 {
     public function __invoke($value, DataContainer $dc)
     {
-        $files = StringUtil::deserialize($value);
+        $files = StringUtil::deserialize($value, true);
         foreach($files as $file) {
-            $fileObject = System::getContainer()->get(ModelUtil::class)->getModelInstanceIfId($file, 'tl_files');
-            if(!preg_match(FileVideoMultipleResolution::getFilePathRegExp(), $fileObject->path)) {
+            $fileObject = FilesModel::findByUuid($file);
+            if (!$fileObject || !preg_match(FileVideoMultipleResolution::getFilePathRegExp(), $fileObject->path)) {
                 throw new \Exception("File name didn't match expectations, expected for example: file_name_720.mp4");
             }
         }

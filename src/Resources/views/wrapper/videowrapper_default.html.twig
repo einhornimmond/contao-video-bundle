@@ -5,7 +5,7 @@
             <div class="video-thumbnail{% if previewImage|default() %} video-hidden{% endif %}" data-contao-video-bundle="1" title="{{ 'huh.youtube.title.play'|trans }}"{% if youtubePrivacy|default() %} data-privacy="true" data-privacy-html="{{ privacy }}"{% endif %} data-btn-privacy-ok="{{ 'huh.youtube.button.privacy.ok'|trans }}" data-btn-privacy-cancel="{{ 'huh.youtube.button.privacy.cancel'|trans }}"{% if autoplay|default() %} data-autoplay="true"{% endif %}>
                 <figure class="image_container">
                     {% if previewImage.picture|default() %}
-                        {{ include('@HeimrichHannotContaoUtils/picture.html.twig', previewImage.picture) }}
+                        {{ include('@HeimrichHannotVideo/image/picture.html.twig', previewImage.picture) }}
                     {% else %}
                         <img src="{{ previewImage.src }}" alt="{{ previewImage.alt|default("Video Preview Image") }}">
                     {% endif %}

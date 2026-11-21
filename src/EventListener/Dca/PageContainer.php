@@ -9,7 +9,7 @@
 namespace HeimrichHannot\VideoBundle\EventListener\Dca;
 
 use Contao\DataContainer;
-use HeimrichHannot\UtilsBundle\Choice\ModelInstanceChoice;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use HeimrichHannot\VideoBundle\Collection\VideoProviderCollection;
 
 class PageContainer
@@ -21,15 +21,15 @@ class PageContainer
     /**
      * @var ModelInstanceChoice
      */
-    private $modelInstanceChoice;
+    private $utils;
 
     /**
      * PageContainer constructor.
      */
-    public function __construct(VideoProviderCollection $videoProviderCollection, ModelInstanceChoice $modelInstanceChoice)
+    public function __construct(VideoProviderCollection $videoProviderCollection, Utils $utils)
     {
         $this->videoProviderCollection = $videoProviderCollection;
-        $this->modelInstanceChoice = $modelInstanceChoice;
+        $this->utils = $utils;
     }
 
     /**
@@ -49,8 +49,12 @@ class PageContainer
      */
     public function onMceLocalStorageAttribute($dc)
     {
-        return $this->modelInstanceChoice->getCachedChoices([
-            'dataContainer' => 'tl_tracking_object',
-        ]);
+        $options = [];
+
+        foreach ($this->utils->model()->findModelInstancesBy('tl_tracking_object', null, null) ?? [] as $model) {
+            $options[$model->id] = $model->title ?: $model->id;
+        }
+
+        return $options;
     }
 }

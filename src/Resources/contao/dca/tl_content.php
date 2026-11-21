@@ -21,7 +21,7 @@ $dca['palettes'][ExtendedVideoElementController::TYPE] =
 	{text_legend:hide},text;
 	{template_legend:hide},customTpl;
 	{protected_legend:hide},protected;
-	{expert_legend:hide},cssID,space;
+	{expert_legend:hide},cssID;
 	{invisible_legend:hide},invisible,start,stop;';
 
 DcaFieldGenerator::addSubpalettes($dca);

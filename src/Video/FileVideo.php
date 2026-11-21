@@ -8,10 +8,9 @@
 
 namespace HeimrichHannot\VideoBundle\Video;
 
+use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\System;
-use HeimrichHannot\UtilsBundle\File\FileUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 
 class FileVideo extends AbstractVideo implements PreviewImageInterface, MultipleSourceVideoInterface, SubtitleInterface
 {
@@ -146,9 +145,9 @@ class FileVideo extends AbstractVideo implements PreviewImageInterface, Multiple
 
         foreach ($data as $element) {
             $subtitles[] = [
-                'src' => System::getContainer()->get(FileUtil::class)->getPathFromUuid($element['file'][0]),
+                'src' => FilesModel::findByUuid($element['file'][0])?->path,
                 'lang' => $element['language'],
-                'label' => System::getLanguages(true)[$element['language']],
+                'label' => System::getContainer()->get('contao.intl.locales')->getDisplayNames([$element['language']])[$element['language']],
             ];
         }
 
@@ -193,7 +192,7 @@ class FileVideo extends AbstractVideo implements PreviewImageInterface, Multiple
         foreach ($data as $video) {
             $mediaQuery = $mediaQueryConfig[$video['mediaQuery']]['query'] ?? '';
             $videoSrc[] = [
-                'file' => System::getContainer()->get(ModelUtil::class)->getModelInstanceIfId($video['file'], 'tl_files'),
+                'file' => FilesModel::findByUuid($video['file']),
                 'mediaQuery' => $mediaQuery,
             ];
         }

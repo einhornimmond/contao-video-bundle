@@ -1,6 +1,8 @@
 services:
   _defaults:
     autowire: true
+    # needed everywhere, the hook/callback attributes are registered by autoconfiguration
+    autoconfigure: true
     bind:
       $bundleConfig: '%huh_video%'
 

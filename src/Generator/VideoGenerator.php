@@ -10,11 +10,11 @@ namespace HeimrichHannot\VideoBundle\Generator;
 
 use Contao\BackendTemplate;
 use Contao\Config;
-use Contao\FilesModel;
-use Contao\Frontend;
+use Contao\CoreBundle\Image\Studio\Studio;
 use Contao\PageModel;
-use HeimrichHannot\UtilsBundle\Image\ImageUtil;
-use HeimrichHannot\UtilsBundle\Template\TemplateUtil;
+use HeimrichHannot\TwigSupportBundle\Filesystem\TwigTemplateLocator;
+use HeimrichHannot\UtilsBundle\Util\HtmlUtil\GenerateDataAttributesStringArrayHandling;
+use HeimrichHannot\UtilsBundle\Util\HtmlUtil\GenerateDataAttributesStringOptions;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 use HeimrichHannot\VideoBundle\Controller\ContentElement\ExtendedVideoElementController;
 use HeimrichHannot\VideoBundle\Event\AfterRenderPlayerEvent;
@@ -29,44 +29,18 @@ use Twig\Environment;
 
 class VideoGenerator
 {
-    /**
-     * @var Environment
-     */
-    private $twig;
-    /**
-     * @var ImageUtil
-     */
-    private $imageUtil;
-    /**
-     * @var array
-     */
-    private $bundleConfig;
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
-     * @var TemplateUtil
-     */
-    private $templateUtil;
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-    private Utils $utils;
+    private array $bundleConfig;
 
-    /**
-     * VideoGenerator constructor.
-     */
-    public function __construct(Environment $twig, ImageUtil $imageUtil, array $bundleConfig, TranslatorInterface $translator, TemplateUtil $templateUtil, EventDispatcherInterface $eventDispatcher, Utils $utils)
-    {
-        $this->twig = $twig;
-        $this->imageUtil = $imageUtil;
+    public function __construct(
+        private readonly Environment $twig,
+        private readonly Studio $studio,
+        array $bundleConfig,
+        private readonly TranslatorInterface $translator,
+        private readonly TwigTemplateLocator $templateLocator,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Utils $utils,
+    ) {
         $this->bundleConfig = $bundleConfig;
-        $this->translator = $translator;
-        $this->templateUtil = $templateUtil;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->utils = $utils;
     }
 
     /**
@@ -98,7 +72,9 @@ class VideoGenerator
             }
             $rootPage = $options['rootPage'];
         } else {
-            $rootPage = Frontend::getRootPageFromUrl();
+            // Frontend::getRootPageFromUrl() was removed in Contao 5
+            $page = $GLOBALS['objPage'] ?? null;
+            $rootPage = $page instanceof PageModel ? PageModel::findByPk($page->rootId) : null;
         }
 
         $context = $video->getData();
@@ -144,7 +120,7 @@ class VideoGenerator
         $context = $event->getContext();
         $context['dataAttributes'] = $this->utils->html()->generateDataAttributesString(
             $context['dataAttributes'],
-            ['array_handling' => 'encode']
+            GenerateDataAttributesStringOptions::create()->setArrayHandling(GenerateDataAttributesStringArrayHandling::ENCODE)
         );
 
         $videoBuffer = $this->twig->render($event->getVideo()->getTemplate(), $context);
@@ -176,26 +152,26 @@ class VideoGenerator
         return $videoBuffer;
     }
 
-    public function getFullsizeTemplate(PageModel $rootPage = null)
+    public function getFullsizeTemplate(?PageModel $rootPage = null)
     {
         $template = 'videofullsize_default';
 
         if ($rootPage && $rootPage->videofullsizeTemplate) {
             $template = $rootPage->videofullsizeTemplate;
         }
-        $template = $this->templateUtil->getTemplate($template);
+        $template = $this->templateLocator->getTemplatePath($template);
 
         return $template;
     }
 
-    public function getPrivacyTemplate(PageModel $rootPage = null)
+    public function getPrivacyTemplate(?PageModel $rootPage = null)
     {
         $template = 'videoprivacy_default';
 
         if ($rootPage && $rootPage->videoprivacyTemplate) {
             $template = $rootPage->videoprivacyTemplate;
         }
-        $template = $this->templateUtil->getTemplate($template);
+        $template = $this->templateLocator->getTemplatePath($template);
 
         return $template;
     }
@@ -208,32 +184,19 @@ class VideoGenerator
             return;
         }
 
-        $imageModel = FilesModel::findByUuid($video->getPreviewImage());
-
         //TODO: Load image from external source
+        $figure = $this->studio->createFigureBuilder()->fromUuid($video->getPreviewImage())->buildIfResourceExists();
 
-        if (!$imageModel) {
+        if (!$figure) {
             unset($context['previewImage']);
 
             return;
         }
 
-        $imageData = [];
-        $this->imageUtil->addToTemplateData(
-            'singleSRC',
-            'addImage',
-            $imageData,
-            [
-                'singleSRC' => $imageModel->path,
-                'addImage' => true,
-//                'size' => $this->getConfig()->getSize(),
-//                'alt' => $this->getConfig()->getYoutube(),
-            ]
-        );
-        $context['previewImage'] = $imageData;
+        $context['previewImage'] = $figure->getLegacyTemplateData();
     }
 
-    protected function generatePrivacyNote(VideoInterface $video, array &$videoContext, PageModel $rootPage = null): string
+    protected function generatePrivacyNote(VideoInterface $video, array &$videoContext, ?PageModel $rootPage = null): string
     {
         $context['headline'] = $this->translator->trans('huh_video.video.'.$video::getType().'.privacy.headline');
         $context['text'] = $this->translator->trans('huh_video.video.'.$video::getType().'.privacy.text');
@@ -243,7 +206,7 @@ class VideoGenerator
         return $this->twig->render($this->getPrivacyTemplate($rootPage), $context);
     }
 
-    protected function isNoCookiesEnabled(PageModel $rootPage = null)
+    protected function isNoCookiesEnabled(?PageModel $rootPage = null)
     {
         $noCookiesEnabled = false;
 
@@ -258,7 +221,7 @@ class VideoGenerator
         return $noCookiesEnabled;
     }
 
-    protected function isPrivacyNoticeEnabled(PageModel $rootPage = null)
+    protected function isPrivacyNoticeEnabled(?PageModel $rootPage = null)
     {
         $isPrivacyNoticeEnabled = false;
 

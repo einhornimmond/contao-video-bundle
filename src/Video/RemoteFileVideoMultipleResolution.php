@@ -10,8 +10,6 @@ namespace HeimrichHannot\VideoBundle\Video;
 
 use Contao\StringUtil;
 use Contao\System;
-use HeimrichHannot\UtilsBundle\File\FileUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use HeimrichHannot\VideoBundle\Video\FileVideoMultipleResolution;
 
 class RemoteFileVideoMultipleResolution extends FileVideoMultipleResolution 

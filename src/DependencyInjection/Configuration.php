@@ -23,12 +23,12 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->booleanNode('enableNewsSupport')->defaultFalse()->setDeprecated('Option was renamed and will be removed in Version 1.0. Use enable_news_support instead.')->end()
-            ->booleanNode('defaultEnableNoCookieVideoUrl')->defaultFalse()->setDeprecated('Option was renamed and will be removed in Version 1.0. Use default_use_no_cookie_video_url instead.')->end()
-            ->booleanNode('defaultEnablePrivacyNotice')->defaultFalse()->setDeprecated('Option was renamed and will be removed in Version 1.0. Use default_display_privacy_notice instead.')->end()
+                ->booleanNode('enableNewsSupport')->defaultFalse()->setDeprecated('heimrichhannot/contao-video-bundle', '1.0', 'Option "%node%" was renamed. Use enable_news_support instead.')->end()
+            ->booleanNode('defaultEnableNoCookieVideoUrl')->defaultFalse()->setDeprecated('heimrichhannot/contao-video-bundle', '1.0', 'Option "%node%" was renamed. Use default_use_no_cookie_video_url instead.')->end()
+            ->booleanNode('defaultEnablePrivacyNotice')->defaultFalse()->setDeprecated('heimrichhannot/contao-video-bundle', '1.0', 'Option "%node%" was renamed. Use default_display_privacy_notice instead.')->end()
             ->arrayNode('videoProvider')
                 ->useAttributeAsKey('name')
-                ->setDeprecated('Option was renamed and will be removed in Version 1.0. Use video_provider instead.')
+                ->setDeprecated('heimrichhannot/contao-video-bundle', '1.0', 'Option "%node%" was renamed. Use video_provider instead.')
                 ->arrayPrototype()
                     ->children()
                         ->scalarNode('class')->end()

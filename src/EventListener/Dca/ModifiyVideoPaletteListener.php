@@ -10,8 +10,7 @@ namespace HeimrichHannot\VideoBundle\EventListener\Dca;
 
 use Contao\DataContainer;
 use Contao\Message;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use HeimrichHannot\VideoBundle\Collection\VideoProviderCollection;
 use HeimrichHannot\VideoBundle\Video\PreviewImageInterface;
 use HeimrichHannot\VideoBundle\Video\VideoInterface;
@@ -34,11 +33,11 @@ class ModifiyVideoPaletteListener
     /**
      * ModifiyVideoPaletteListener constructor.
      */
-    public function __construct(ContainerUtil $containerUtil, ModelUtil $modelUtil, VideoProviderCollection $videoProviderCollection)
+    public function __construct(Utils $utils, VideoProviderCollection $videoProviderCollection)
     {
-        $this->containerUtil = $containerUtil;
+        $this->containerUtil = $utils->container();
         $this->videoProviderCollection = $videoProviderCollection;
-        $this->modelUtil = $modelUtil;
+        $this->modelUtil = $utils->model();
     }
 
     /**

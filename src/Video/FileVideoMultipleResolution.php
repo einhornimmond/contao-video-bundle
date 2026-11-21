@@ -8,11 +8,10 @@
 
 namespace HeimrichHannot\VideoBundle\Video;
 
+use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\Message;
 use Contao\System;
-use HeimrichHannot\UtilsBundle\File\FileUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use HeimrichHannot\VideoBundle\Video\FileVideo;
 
 class FileVideoMultipleResolution extends FileVideo 
@@ -111,12 +110,12 @@ class FileVideoMultipleResolution extends FileVideo
         $this->files = [];
         $resolutions = [];
         foreach ($data as $i => $file) {
-            $fileObject = System::getContainer()->get(ModelUtil::class)->getModelInstanceIfId($file, 'tl_files');
+            $fileObject = FilesModel::findByUuid($file);
             
             $matches = [];
             if(!preg_match($this->getFilePathRegExp(), $fileObject->path, $matches)) {
                 //throw new \Exception("File name didn't match expectations, expected for example: file_name_720.mp4");
-                \Message::addError("File name didn't match expectations, expected for example: file_name_720.mp4");
+                Message::addError("File name didn't match expectations, expected for example: file_name_720.mp4");
                 $this->video_id = 'Error';
             }
             if($this->video_id == '') {

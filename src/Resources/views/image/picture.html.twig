@@ -1,0 +1,7 @@
+{# renders the "picture" array of Contao's legacy image template data #}
+<picture>
+    {% for source in sources|default([]) %}
+        <source srcset="{{ source.srcset }}"{% if source.sizes|default %} sizes="{{ source.sizes }}"{% endif %}{% if source.media|default %} media="{{ source.media }}"{% endif %}{% if source.type|default %} type="{{ source.type }}"{% endif %}{% if source.width|default %} width="{{ source.width }}"{% endif %}{% if source.height|default %} height="{{ source.height }}"{% endif %}>
+    {% endfor %}
+    <img src="{{ img.src }}"{% if img.srcset|default and img.srcset != img.src %} srcset="{{ img.srcset }}"{% endif %}{% if img.sizes|default %} sizes="{{ img.sizes }}"{% endif %} alt="{{ alt|default('') }}"{% if title|default %} title="{{ title }}"{% endif %}{% if img.width|default %} width="{{ img.width }}"{% endif %}{% if img.height|default %} height="{{ img.height }}"{% endif %}{% if img.loading|default %} loading="{{ img.loading }}"{% endif %}{% if img.class|default %} class="{{ img.class }}"{% endif %}>
+</picture>

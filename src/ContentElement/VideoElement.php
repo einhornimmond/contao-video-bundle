@@ -57,7 +57,7 @@ class VideoElement extends ContentElement
             }
         }
 
-        if (TL_MODE == 'BE') {
+        if (System::getContainer()->get(Utils::class)->container()->isBackend()) {
             $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->title = $this->headline;
 
